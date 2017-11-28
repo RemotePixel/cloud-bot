@@ -22,7 +22,7 @@ def handler(event, context):
     scene, im, info = utils.create_img(highres=is_full)
     place = info.get('name', '')
 
-    tweet_content = f'#Landsat #clouds \n {place}\n https://viewer.remotepixel.ca/?sceneid={scene}'
+    tweet_content = f'{place}\n #Landsat #clouds\n https://viewer.remotepixel.ca/?sceneid={scene}'
     api.update_with_media(f'{scene}_cloud.jpg', status=tweet_content, file=im)
 
     return True
@@ -44,7 +44,7 @@ def handler_fullcloud(event, context):
     scene, im, info = utils.create_img(highres=is_full, min_cloud=99)
     place = info.get('name', '')
 
-    tweet_content = f'#Landsat #clouds \n {place}\n https://viewer.remotepixel.ca/?sceneid={scene}'
+    tweet_content = f'{place}\n #Landsat #clouds\n https://viewer.remotepixel.ca/?sceneid={scene}'
     api.update_with_media(f'{scene}_cloud.jpg', status=tweet_content, file=im)
 
     return True

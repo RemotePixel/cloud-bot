@@ -91,7 +91,7 @@ def get_place(lat, lon):
     geocoder = Geocoder(access_token=os.environ['MapboxAccessToken'])
     place = 'Somewhere over the clouds!'
     try:
-        response = geocoder.reverse(lon=-lon, lat=lat, types=['region'])
+        response = geocoder.reverse(lon=lon, lat=lat, types=['region'])
         if response.status_code == 200:
             features = response.geojson()['features']
             place = features[0].get('place_name')

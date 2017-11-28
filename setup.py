@@ -24,7 +24,8 @@ setup(name='cloud_bot',
       install_requires=[
         'rio_tiler',
         'tweepy',
-        'click'
+        'click',
+        'mapbox'
       ],
       zip_safe=False,
       entry_points={

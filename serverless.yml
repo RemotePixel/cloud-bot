@@ -25,6 +25,7 @@ provider:
     C_SECRET: ${file(.config.json):consumer_secret}
     A_KEY: ${file(.config.json):access_key}
     A_SECRET: ${file(.config.json):access_secret}
+    MapboxAccessToken: ${file(.config.json):mapbox_token}
 
   deploymentBucket: remotepixel-${self:provider.region}
 

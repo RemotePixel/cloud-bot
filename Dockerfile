@@ -21,7 +21,7 @@ RUN pip3 install numpy wheel cython --no-binary numpy
 
 # Install Python dependencies
 # RUN pip3 install rasterio[s3]>=1.0a10 Pillow rio-toa tweepy --no-binary numpy -t /tmp/vendored -U
-RUN pip3 install rio-tiler tweepy --no-binary numpy -t /tmp/vendored -U
+RUN pip3 install rio-tiler tweepy mapbox --no-binary numpy -t /tmp/vendored -U
 
 # Reduce Lambda package size to fit the 250Mb limit
 # Mostly based on https://github.com/jamesandersen/aws-machine-learning-demo

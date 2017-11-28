@@ -1,4 +1,6 @@
 """cloud_bot.utils: utility function"""
+
+import os
 import re
 import json
 import time
@@ -12,6 +14,8 @@ from urllib.request import urlopen
 from PIL import Image
 
 import numpy as np
+
+from mapbox import Geocoder
 
 import rasterio
 import mercantile
@@ -80,7 +84,23 @@ def band_worker(band, landsat_address, meta, bounds=None):
     return matrix
 
 
-def create_img(highres=None, bands=[5, 4, 3]):
+def get_place(lat, lon):
+    """Get the region name of the center lat/lon
+    """
+    geocoder = Geocoder()
+    geocoder = Geocoder(access_token=os.environ['MapboxAccessToken'])
+    place = 'Somewhere over the clouds!'
+    try:
+        response = geocoder.reverse(lon=-lon, lat=lat, types=['region'])
+        if response.status_code == 200:
+            features = response.geojson()['features']
+            place = features[0].get('place_name')
+        return place
+    except:
+        return place
+
+
+def create_img(highres=None, bands=[5, 4, 3], min_cloud=60):
     """
     """
     max_i = 5
@@ -88,7 +108,7 @@ def create_img(highres=None, bands=[5, 4, 3]):
 
     while True:
         date_image = random_date().strftime('%Y-%m-%d')
-        query = f'{sat_api}satellite_name=landsat-8&date={date_image}&cloud_from=60&limit=2000'
+        query = f'{sat_api}satellite_name=landsat-8&date={date_image}&cloud_from={min_cloud}&limit=2000'
         response = json.loads(urlopen(query).read())
         if response.get('errorMessage'):
             raise Exception('What is wrong with you dude')
@@ -104,10 +124,11 @@ def create_img(highres=None, bands=[5, 4, 3]):
         aws_id = re.sub(r'LGN0[0-9]', 'LGN00', scene['scene_id']) \
             if date < time.strptime('2017-05-01', '%Y-%m-%d') else scene['LANDSAT_PRODUCT_ID']
 
+        lat = scene['sceneCenterLatitude']
+        lng = scene['sceneCenterLongitude']
+
         try:
             if highres:
-                lat = scene['sceneCenterLatitude']
-                lng = scene['sceneCenterLongitude']
                 tile = mercantile.tile(lng, lat, 9, truncate=True)
                 bounds = mercantile.xy_bounds(tile)
             else:
@@ -135,4 +156,9 @@ def create_img(highres=None, bands=[5, 4, 3]):
 
             continue
 
-        return aws_id, im
+        info = {
+            'lat': lat,
+            'lng': lng,
+            'name': get_place(lat, lng)}
+
+        return aws_id, im, info
